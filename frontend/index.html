@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--
+  Regime Radar — dashboard frontend.
+
+  This is a single, dependency-free page (no build step, no framework) so it is
+  easy to read and easy to embed in your website later (drop it behind an iframe
+  or copy the markup). All the logic lives in app.js; styling in style.css.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Regime Radar 📡</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Market Regime Radar 📡</h1>
+    <div class="controls">
+      <label for="timeframe">Timeframe</label>
+      <select id="timeframe"></select>
+      <span id="status" class="status">connecting…</span>
+    </div>
+  </header>
+
+  <!-- Current regime headline: which quadrant, bias, confidence -->
+  <section id="headline" class="headline">
+    <div class="headline-quadrant" id="headline-quadrant">—</div>
+    <div class="headline-meta">
+      <div>Bias: <strong id="headline-bias">—</strong></div>
+      <div>Favored: <strong id="headline-favored">—</strong></div>
+      <div>Confidence: <strong id="headline-confidence">—</strong></div>
+    </div>
+  </section>
+
+  <main class="layout">
+    <!-- The 2x2 regime board, drawn to match the reference image -->
+    <section class="board-wrap">
+      <!-- Growth labels flow above/below the board (normal flow, no overlap).
+           Inflation labels are positioned on the left/right sides. -->
+      <div class="axis-growth axis-growth-top">↑ Growth above trend</div>
+      <!-- Vertical labels: the text is rotated, so we pick an UP-arrow glyph
+           that, after rotation, points outward (left arrow points left, right
+           arrow points right). Arrow + text stay together as one rotated unit. -->
+      <div class="axis axis-left">Inflation falls ↑</div>
+      <div class="axis axis-right">Inflation rises ↑</div>
+
+      <div class="board">
+        <!-- data-quadrant lets app.js highlight the active cell -->
+        <div class="cell" data-quadrant="RECOVERY">
+          <div class="cell-name">RECOVERY</div>
+          <div class="cell-asset">STOCKS</div>
+        </div>
+        <div class="cell" data-quadrant="OVERHEAT">
+          <div class="cell-name">OVERHEAT</div>
+          <div class="cell-asset">COMMODITIES</div>
+        </div>
+        <div class="cell" data-quadrant="REFLATION">
+          <div class="cell-name">REFLATION</div>
+          <div class="cell-asset">BONDS</div>
+        </div>
+        <div class="cell" data-quadrant="STAGFLATION">
+          <div class="cell-name">STAGFLATION</div>
+          <div class="cell-asset">CASH</div>
+        </div>
+
+        <!-- A dot plotted on the board at (inflation, growth) -->
+        <div class="board-dot" id="board-dot"></div>
+      </div>
+
+      <div class="axis-growth axis-growth-bottom">↓ Growth below trend</div>
+
+      <div class="axis-scores">
+        Growth: <strong id="score-growth">—</strong> &nbsp;|&nbsp;
+        Inflation: <strong id="score-inflation">—</strong>
+      </div>
+    </section>
+
+    <!-- Live headline quotes (updates over WebSocket during market hours) -->
+    <section class="panel">
+      <h2>Live quotes <span id="live-dot" class="live-dot off"></span></h2>
+      <table class="quote-table">
+        <tbody id="quotes-body">
+          <tr><td>loading…</td></tr>
+        </tbody>
+      </table>
+      <p class="hint" id="live-hint">Live updates stream while the US market is open.</p>
+    </section>
+  </main>
+
+  <!-- Per-quadrant benchmark asset tables -->
+  <section class="panel">
+    <h2>Benchmark assets by regime</h2>
+    <div class="asset-grid" id="asset-grid"></div>
+  </section>
+
+  <!-- Year-long weekly regime history: growth + inflation lines over colored
+       regime bands. Gives insight into how the regime has shifted over time. -->
+  <section class="panel">
+    <h2>Regime history <span class="hint" style="font-weight:400" id="chart-subtitle">— 1 year, weekly</span></h2>
+    <div class="chart-legend" id="chart-legend"></div>
+    <div class="chart-wrap">
+      <canvas id="history-chart"></canvas>
+    </div>
+  </section>
+
+  <!-- Four Fear & Greed gauges, one per asset area -->
+  <section class="panel">
+    <h2>Fear &amp; Greed</h2>
+    <div class="gauges" id="gauges"></div>
+  </section>
+
+  <footer class="footer">
+    <span>Updated: <span id="last-updated">—</span></span>
+    <span>⚠️ Educational tool — not financial advice.</span>
+  </footer>
+
+  <!-- Chart.js (via CDN) powers the regime history chart. One script tag, no
+       build step. Pinned to a major version for stability. -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# ─── Data ───────────────────────────────────────────────────
+yfinance>=1.4.0         # keyless market data (prices for all assets)
+pandas>=2.2.0           # data manipulation
+numpy>=1.26.0           # numeric helpers for indicators
+pyarrow>=15.0.0         # Parquet read/write for the disk cache
+
+# ─── Backend / web ──────────────────────────────────────────
+fastapi>=0.110.0        # REST API + WebSocket app
+uvicorn[standard]>=0.29.0   # ASGI server (runs the dashboard)
+websockets>=12.0        # live layer transport
+jinja2>=3.1.0           # serve the static frontend template
+python-dotenv>=1.0.0    # load .env (secrets stay out of code)
+
+# ─── Scheduling ─────────────────────────────────────────────
+APScheduler>=3.10.0     # background jobs (slow regime refresh)
+
+# ─── Time / market hours ────────────────────────────────────
+pandas-market-calendars>=4.4.0   # NYSE holiday + session awareness
+
+# ─── Dev / tests ────────────────────────────────────────────
+pytest>=8.0.0

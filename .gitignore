@@ -1,0 +1,49 @@
+# ─────────────────────────────────────────────────────────────
+# SECRETS — never commit these
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+dontshow.py
+config_secret.py
+secrets.py
+
+# ─────────────────────────────────────────────────────────────
+# RUNTIME DATA — local cache & database, never commit
+# ─────────────────────────────────────────────────────────────
+# NOTE: leading slash anchors this to the repo root so it does NOT also
+# ignore the app/data/ SOURCE package.
+/data/
+*.db
+*.sqlite
+*.sqlite3
+*.parquet
+logs/
+*.log
+
+# ─────────────────────────────────────────────────────────────
+# PYTHON
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# ─────────────────────────────────────────────────────────────
+# EDITORS / OS
+# ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

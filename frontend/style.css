@@ -1,0 +1,183 @@
+/*
+  Regime Radar styles.
+
+  Dark theme, responsive grid. The four quadrant colors mirror the reference
+  image and are also sent by the API, but we define fallbacks here.
+*/
+
+:root {
+  --bg: #0e1117;
+  --panel: #161b22;
+  --border: #2a313c;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --recovery: #2e9e4f;
+  --overheat: #f2c014;
+  --reflation: #1f6fb2;
+  --stagflation: #c0392b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ── Top bar ─────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.topbar h1 { font-size: 1.35rem; margin: 0; }
+.controls { display: flex; align-items: center; gap: 10px; }
+.controls label { color: var(--muted); font-size: 0.85rem; }
+select {
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 10px; font-size: 0.9rem;
+}
+.status {
+  font-size: 0.8rem; color: var(--muted);
+  padding: 3px 8px; border: 1px solid var(--border); border-radius: 12px;
+}
+.status.ok { color: var(--recovery); border-color: var(--recovery); }
+.status.err { color: var(--stagflation); border-color: var(--stagflation); }
+
+/* ── Headline ────────────────────────────────────────────── */
+.headline {
+  display: flex; align-items: center; gap: 28px;
+  padding: 18px 22px; flex-wrap: wrap;
+}
+.headline-quadrant {
+  font-size: 2rem; font-weight: 800; letter-spacing: 1px;
+  padding: 8px 18px; border-radius: 10px; background: var(--panel);
+  border: 2px solid var(--border);
+}
+.headline-meta { display: flex; gap: 26px; flex-wrap: wrap; color: var(--muted); }
+.headline-meta strong { color: var(--text); }
+
+/* ── Layout ──────────────────────────────────────────────── */
+.layout {
+  display: grid; grid-template-columns: minmax(320px, 1.4fr) 1fr;
+  gap: 18px; padding: 0 22px;
+}
+@media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px; margin: 18px 22px;
+}
+.layout .panel { margin: 0; }
+.panel h2 { margin: 0 0 12px; font-size: 1.05rem; }
+
+/* ── 2x2 board ───────────────────────────────────────────── */
+.board-wrap {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; position: relative;
+  /* Extra side/top/bottom padding leaves room for the axis labels that sit
+     outside the board grid, so they never overlap the cells or the scores. */
+  padding: 34px 56px 16px;
+}
+.board {
+  position: relative;
+  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  /* Fixed, deterministic size on wide screens (avoids aspect-ratio/max-height
+     conflicts that let content overlap). Capped width keeps the board compact. */
+  width: 100%; max-width: 560px; height: 440px; margin: 0 auto;
+}
+.cell {
+  border-radius: 10px; padding: 14px; color: #fff;
+  display: flex; flex-direction: column; justify-content: space-between;
+  opacity: 0.4; transition: opacity 0.3s, transform 0.3s;
+  border: 2px solid transparent;
+}
+.cell[data-quadrant="RECOVERY"]    { background: var(--recovery); }
+.cell[data-quadrant="OVERHEAT"]    { background: var(--overheat); color:#222; }
+.cell[data-quadrant="REFLATION"]   { background: var(--reflation); }
+.cell[data-quadrant="STAGFLATION"] { background: var(--stagflation); }
+.cell.active { opacity: 1; transform: scale(1.02); border-color: #fff; }
+.cell-name { font-weight: 800; font-size: 1.05rem; letter-spacing: 0.5px; }
+.cell-asset { font-size: 0.8rem; opacity: 0.85; align-self: flex-end; }
+
+/* Dot marking the exact (inflation, growth) position */
+.board-dot {
+  position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; border: 3px solid #000;
+  transform: translate(-50%, -50%); transition: left 0.5s, top 0.5s;
+  left: 50%; top: 50%; pointer-events: none; box-shadow: 0 0 8px rgba(0,0,0,0.6);
+}
+
+/* Growth labels: centered in normal flow, above and below the board. */
+.axis-growth {
+  text-align: center; color: var(--text); opacity: 0.85;
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 0.3px;
+}
+.axis-growth-top { margin-bottom: 14px; }
+.axis-growth-bottom { margin-top: 14px; margin-bottom: 6px; }
+
+/* Inflation labels: horizontal text rotated 90° on the left/right edges. The
+   trailing up-arrow, once rotated, points outward (left→left, right→right). */
+.axis {
+  position: absolute; top: 50%; color: var(--text); opacity: 0.85;
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 0.3px;
+  white-space: nowrap; transform-origin: center;
+}
+.axis-left  { left: 2px;  transform: translateY(-50%) rotate(-90deg); }
+.axis-right { right: 2px; transform: translateY(-50%) rotate(90deg); }
+
+.axis-scores {
+  text-align: center; margin-top: 14px; color: var(--muted); font-size: 0.95rem;
+}
+.axis-scores strong { color: var(--text); }
+
+/* ── Live quotes ─────────────────────────────────────────── */
+.quote-table { width: 100%; border-collapse: collapse; }
+.quote-table td { padding: 6px 4px; border-bottom: 1px solid var(--border); font-size: 0.92rem; }
+.quote-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.live-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.live-dot.on { background: var(--recovery); box-shadow: 0 0 6px var(--recovery); }
+.live-dot.off { background: var(--muted); }
+.hint { color: var(--muted); font-size: 0.78rem; margin: 8px 0 0; }
+
+/* ── Regime history chart ────────────────────────────────── */
+.chart-wrap { position: relative; height: 320px; width: 100%; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; font-size: 0.8rem; color: var(--muted); }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.legend-line { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+
+/* ── Fear & Greed gauges ─────────────────────────────────── */
+.gauges { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+.gauge { text-align: center; }
+.gauge-title { font-size: 0.9rem; color: var(--muted); margin-bottom: 8px; }
+.gauge-bar { height: 10px; border-radius: 6px; background: linear-gradient(90deg, var(--stagflation), var(--overheat), var(--recovery)); position: relative; }
+.gauge-marker { position: absolute; top: -4px; width: 4px; height: 18px; background: #fff; border-radius: 2px; transform: translateX(-50%); transition: left 0.5s; }
+.gauge-score { font-size: 1.4rem; font-weight: 700; margin-top: 8px; }
+.gauge-label { font-size: 0.8rem; color: var(--muted); }
+
+/* ── Asset tables ────────────────────────────────────────── */
+.asset-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.asset-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.asset-card h3 { margin: 0 0 8px; font-size: 0.95rem; }
+.asset-card table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.asset-card td { padding: 4px 2px; border-bottom: 1px solid var(--border); }
+.asset-card td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.pos { color: var(--recovery); }
+.neg { color: var(--stagflation); }
+
+/* ── Footer ──────────────────────────────────────────────── */
+.footer {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  padding: 16px 22px; color: var(--muted); font-size: 0.8rem;
+  border-top: 1px solid var(--border); margin-top: 10px;
+}
